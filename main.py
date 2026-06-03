@@ -58,36 +58,6 @@ class Produto():
         self.tipo = tipo
         self.preco = preco
 
-class Comida(Produto):
-    def __init__(self, nome, tipo, preco, tipoComida):
-        super().__init__(nome, tipo, preco)
-        self.tipoComida = tipoComida
-
-class perecivel(Comida):
-    def __init__(self, nome, tipo, preco, tipoComida, dataValidade):
-        super().__init__(nome, tipo, preco, tipoComida)
-        self.dataValidade = dataValidade
-
-class Bebida(Produto):
-    def __init__(self, nome, tipo, preco, tipoBebida):
-        super().__init__(nome, tipo, preco)
-        self.tipoBebida = tipoBebida
-
-class Limpeza(Produto):
-    def __init__(self, nome, tipo, preco, tipoLimpeza):
-        super().__init__(nome, tipo, preco)
-        self.tipoLimpeza = tipoLimpeza
-
-class Higiene(Produto):
-    def __init__(self, nome, tipo, preco, tipoHigiene):
-        super().__init__(nome, tipo, preco)
-        self.tipoHigiene = tipoHigiene
-
-class Outros(Produto):
-    def __init__(self, nome, tipo, preco, tipoOutros):
-        super().__init__(nome, tipo, preco)
-        self.tipoOutros = tipoOutros
-
 # organizar com numeração e dicionário
 j = 1
 lista = {}
