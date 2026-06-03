@@ -72,11 +72,50 @@ class organizar_lista:
             print(f"{chave} - {self.items[chave]}")
 
 
+# validar as entradas do usuário
+class validador_entrada:
+    def opcao(pedido, opcoes):
+        opcoes_upper = [str(opc).upper() for opc in opcoes]
+        
+        while True:
+            resposta = input(pedido).strip().upper()
+            if resposta in opcoes_upper:
+                return resposta
+            print(f" Opção inválida! Escolha entre: {'ou '.join(opcoes)}")
+
+# exemplo de uso do validador de entrada
+'''teste = validador_entrada()
+perg_perecivel = teste.opcao(
+            "Este produto é perecível? (Sim ou Nao): ", 
+            opcoes=["Sim", "Nao"]
+        )
+'''
+
 class Produto():
     def __init__(self, nome, tipo, preco):
         self.nome = nome
         self.tipo = tipo
         self.preco = preco
+    
+        def classificar_produto(self, tipo):
+            self.tipo = tipo
+            tipo = input("Digite o tipo do produto (comida, bebida, limpeza, higiene, outros): ")
+            if tipo.lower() == "comida":
+                self.tipo = "Comida"
+                self.tipoComida = input("Perecível ou não perecível? ")
+                if self.tipoComida.lower() == "perecível":
+                    self.tipo = "Comida Perecível"
+                    validade = input("Digite a validade do produto (dd/mm/aaaa): ")
+                    self.validade = validade
+
+            if tipo.lower() == "bebida":
+                self.tipo = "bebida"
+                self.tipoBebida = input("Gelada ou quente? ")
+                if self.tipoBebida.lower() == "gelada":
+                    self.tipo = "Bebida Gelada"
+                elif self.tipoBebida.lower() == "quente":
+                    self.tipo = "Bebida Quente"
+            print(f"Produto classificado como: {self.tipo}")
     
 
 
