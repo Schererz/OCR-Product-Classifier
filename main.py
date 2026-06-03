@@ -14,9 +14,9 @@ class OCRProcessor:
         return texto
 
 # configurar path de imagem e do tesseract
-pytesseract.pytesseract.tesseract_cmd = r"C:\Users\pedro\AppData\Local\Programs\Tesseract-OCR\tesseract.exe" # tesseract
+pytesseract.pytesseract.tesseract_cmd = r"C:\Users\pedro\AppData\Local\Programs\Tesseract-OCR\tesseract.exe" # path do executável do tesseract
 ocr_processor = OCRProcessor(pytesseract.pytesseract.tesseract_cmd)
-texto = ocr_processor.process_image('image.png') #imagem
+texto = ocr_processor.process_image('image.png') #nome do arquivo da imagem (se estiver em pasta diferete, colocar path completo)
 
 # classe formatar texto da imagem
 class editorTexto:
@@ -47,52 +47,96 @@ class editorTexto:
             
         return linhas_limpas
     
-#lista formatada em forma de string
-texto_limpo = editorTexto.limpar_lista_compras(texto) 
-# print(texto_limpo)
+class organizar_lista:
+        
+    def __init__(self):
+        self.items = {}
 
-# classes dos produtos -----------------------------------------------
+
+    def popular_lista(self, lista_items_limpos):
+        j = 1
+        lista = {}
+        for item in lista_items_limpos:
+            self.items[j] = item
+            j += 1
+        return self.items 
+        
+    def exibir_lista(self):
+        """Mostra a lista formatada na tela."""
+        print("\n--- LISTA DE COMPRAS ---")
+        if not self.items:
+            print("A lista está vazia.")
+            return
+                
+        for chave in self.items:
+            print(f"{chave} - {self.items[chave]}")
+
+
 class Produto():
     def __init__(self, nome, tipo, preco):
         self.nome = nome
         self.tipo = tipo
         self.preco = preco
+    
 
-# organizar com numeração e dicionário
-j = 1
-lista = {}
-for item in texto_limpo:
-    lista[j] = item
-    j += 1
-print("\nLista de compras:")
-for item in lista:
-    print (f"{item} - {lista[item]}")
+
 
 # classe para editar os produtos da lista
 def editar_produto(choice):
+
     while True:
-        if choice in lista:
-            print(f"Produto escolhido: {lista[choice]}")
+
+        if choice in minha_lista.items:
+            print(f"Produto escolhido: {minha_lista.items[choice]}")
             while True:
                 print("Você deseja:    Classificar (1)    Excluir (2)   Sair (0)")
                 option = int(input("Escolha uma opção: "))
                 if option == 1:
                     tipo = input("Digite o tipo do produto (Comida, Bebida, Limpeza, Higiene, Outros): ")
-                    # Lógica para classificar o produto de acordo com o tipo escolhido
-                    pass
-                elif option == 2:
-                    lista.pop(choice)
-                    print("Produto excluído!")
-                    pass
-                elif option == 0:
+                    # Lógica para classificar o produto (a ser implementado)
+                    print(f"Produto classificado como: {tipo}")
                     break
+                elif option == 2:
+                    minha_lista.items.pop(choice)
+                    print("Produto excluído!")
+                    break
+                elif option == 0:
+                    return False
                 else:
                     print("Opção inválida!")
-        else:
+        elif choice == 0:
+            return False
+        elif choice not in minha_lista.items:
             print("Produto não encontrado na lista!")
+            choice = int(input("Escolha outro produto: "))
+        elif isinstance(choice, int) == False:
+            print("Entrada inválida! Digite um número.")
+            choice = int(input("Escolha outro produto: "))
+        
+def escolher_produto():
+    while True:
+        try:
+            choice = int(input("\nEscolha o produto que deseja editar(0 para sair): "))
+            return choice
+        except ValueError:
+            print("Entrada inválida! Digite um número.")
 
-choice = int(input("\nEscolha o produto que deseja editar: "))
+
+
+
+# execução do programa 
+
+
+# 1 passo - processar a imagem e extrair o texto
+items_limpos = editorTexto.limpar_lista_compras(texto) 
+
+# 2 passo - organizar a lista e exibir na tela
+minha_lista = organizar_lista()
+minha_lista.popular_lista(items_limpos)
+
+# 3 passo - escolher o produto e editar
+minha_lista.exibir_lista()
+choice = escolher_produto()
+
+# 4 passo - editar o produto escolhido
 editar_produto(choice)
-
-
-
