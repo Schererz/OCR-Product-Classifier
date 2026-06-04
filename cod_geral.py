@@ -194,7 +194,7 @@ items_limpos = editorTexto.limpar_lista_compras(texto)
 # 2 passo - organizar a lista e exibir na tela
 minha_lista = organizar_lista()
 minha_lista.popular_lista(items_limpos)
-
+'''
 # 3 passo - escolher o produto e editar
 choice = None
 while choice != 0: #loop externo 
@@ -202,4 +202,4 @@ while choice != 0: #loop externo
     choice = Produto.escolher_produto()
 
 # 4 passo - editar o produto escolhido (dentro do loop)
-    Produto.editar_produto(choice)
+    Produto.editar_produto(choice)'''
