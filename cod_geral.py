@@ -2,8 +2,7 @@ import pytesseract
 from PIL import Image
 import re
 
-# classe pra tirar texto da imagem
-class OCRProcessor:
+class OCRProcessor: # processa a imagem e extrai o texto usando TESSERACT
     def __init__(self, tesseract_cmd):
         pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
 
@@ -13,193 +12,133 @@ class OCRProcessor:
         print("Imagem processada!")
         return texto
 
-# configurar path de imagem e do tesseract
-pytesseract.pytesseract.tesseract_cmd = r"C:\Users\pedro\AppData\Local\Programs\Tesseract-OCR\tesseract.exe" # path do executável do tesseract
-ocr_processor = OCRProcessor(pytesseract.pytesseract.tesseract_cmd)
-texto = ocr_processor.process_image('image.png') #nome do arquivo da imagem
 
-# classe para formatar texto da imagem
-class editorTexto:
-
-    def limpar_lista_compras(texto):
-        linhas_limpas = []
-        linhas = texto.strip().split("\n")
-        
-        for linha in linhas:
-            linha = linha.strip()
-            if not linha:
-                continue
-                
-            # filtra os titulos
-            if "LISTA DE COMPRAS" in linha or "DIA A DIA" in linha or "MERCADO" in linha:
-                continue 
-
-            #limpeza nos itens da lista
-            linha_limpa = re.sub(r'^[A-Za-z0-9\|\s\-\d\/ ]+?\s+(?=[A-ZÂÃÉÍÓÚ])', '', linha)
-            #tira pontos e traços no final das palavras
-            linha_limpa = re.sub(r'[\.\-\s]+$', '', linha_limpa)
-            linha_limpa = linha_limpa.upper()
-            
-            # coloca checkbox nos itens
-            linhas_limpas.append(f"[ ] {linha_limpa}")
-            # saida exemplo [ ] Nome do produto
-            
-        return linhas_limpas
-
-# organizar a lista e exibir na tela
-class organizar_lista:        
-    def __init__(self):
-        self.items = {}
-
-    # adicionar os itens no dicionário da lista
-    def popular_lista(self, lista_items_limpos):
-        j = 1
-        for item in lista_items_limpos:
-            self.items[j] = {
-                "nome": item,
-                "tipo": "Não classificado",
-                "preco": 0.0,
-                "validade": "N/A"
-            }
-            j += 1
-        return self.items
-        
-    def exibir_lista(self):
-        """Mostra a lista formatada na tela com seus detalhes."""
-        print("\n--- LISTA DE COMPRAS ---")
-        if not self.items:
-            print("A lista está vazia.")
-            return
-                
-        for chave in self.items:
-            prod = self.items[chave]
-            print(f"{chave} - {prod['nome']}")
-            # exibe os subdados caso o produto já tenha sido classificado
-            if prod['tipo'] != "Não classificado":
-                print(f"    └─ Tipo: {prod['tipo']} | Preço: R$ {prod['preco']:.2f} | Validade: {prod['validade']}")
-
-
-# validar as entradas do usuário sem precisar repetir código
-class validador_entrada:
-    def opcao(pedido, opcoes): # para opçao
+class ValidadorEntrada: # classe para validar as entradas do usuário
+    def opcao(pedido, opcoes):
         opcoes_upper = [str(opc).upper() for opc in opcoes]
-        
         while True:
             resposta = input(pedido).strip().upper()
             if resposta in opcoes_upper:
                 return resposta
-            print(f" Opção inválida! Escolha entre: {'ou '.join(opcoes)}")
+            print(f" Opção inválida! Escolha entre: {' ou '.join(opcoes)}")
     
-    def numero(pedido): # para o preco
+    def numero(pedido):
         while True:
             try:
-                valor = float(input(pedido).replace(",", "."))
-                return valor
+                return float(input(pedido).replace(",", "."))
             except ValueError:
                 print("Entrada inválida! Digite um número válido.")
 
-# classe do produto e editar produto
-class Produto():
-    def __init__(self, nome, tipo, preco):
-        self.nome = nome.strip("[ ]").strip()
-        self.tipo = tipo
-        self.preco = preco
-        self.validade = "N/A" # padrão
-    
-    def classificar_produto(self, objeto_lista, chave_produto):
-        # pergunta o preço de forma genérica para qualquer produto
-        perg_preco = validador_entrada.numero(f"Digite o preço do produto {self.nome}: R$ ")
-        self.preco = perg_preco
 
-        tipo_input = input("Digite o tipo do produto (comida, bebida, limpeza, higiene, outros): ").strip().lower()
-        
-        # aqui começa os ifs pra classificação 
-        if tipo_input == "comida":
-            self.tipo = "Comida"
-            perg_tipoComida = validador_entrada.opcao(
-                "Perecível ou Não Perecível? ",
-                opcoes=["Perecível", "perecivel", "Não Perecível", "nao perecivel"]
-            )
-            self.tipoComida = perg_tipoComida
-            if self.tipoComida.lower() in ["perecível", "perecivel"]:
-                self.tipo = "Comida Perecível"
-                validade = input("Digite a validade do produto (dd/mm/aaaa): ")
-                self.validade = validade
-                print(f"\nProduto {self.nome} classificado como: {self.tipo} com validade {self.validade}")
-            else: 
-                self.tipo = "Comida Não Perecível"
-                print(f"\nProduto {self.nome} classificado como: {self.tipo}")
+class GerenciadorTexto: # classe para organizar o texto extraído da imagem
+    def limpar_lista_compras(texto):
+        linhas_limpas = []
+        linhas = texto.strip().split("\n")
+        for linha in linhas:
+            linha = linha.strip()
+            if not linha or any(t in linha for t in ["LISTA DE COMPRAS", "DIA A DIA", "MERCADO"]):
+                continue 
             
+            linha_limpa = re.sub(r'^[A-Za-z0-9\|\s\-\d\/ ]+?\s+(?=[A-ZÂÃÉÍÓÚ])', '', linha)
+            linha_limpa = re.sub(r'[\.\-\s]+$', '', linha_limpa).upper()
+            linhas_limpas.append(linha_limpa)
+        return linhas_limpas
 
-        if tipo_input == "bebida":
-            self.tipo = "Bebida"
-            self.tipoBebida = input("Gelada ou quente? ").strip().lower()
-            if self.tipoBebida == "gelada":
-                self.tipo = "Bebida Gelada"
-            elif self.tipoBebida == "quente":
-                self.tipo = "Bebida Quente"
-            print(f"\nProduto {self.nome} classificado como: {self.tipo}")
+class Produto:
+    def __init__(self, nome):
+        self.nome = nome
+        self.preco = 0.0
+        self.tipo = "Não classificado"
+
+    def classificar(self):
+        """Método que será sobrescrito nas subclasses (Polimorfismo)"""
+        self.preco = ValidadorEntrada.numero(f"Digite o preço de '{self.nome}': R$ ")
+
+    def obter_detalhes(self):
+        return f"Tipo: {self.tipo} | Preço: R$ {self.preco:.2f}"
+
+
+class ProdutoComida(Produto): # HERANÇA: herda de Produto
+    def __init__(self, nome):
+        super().__init__(nome)
+        self.tipo = "Comida"
+        self.validade = "N/A"
+
+    def classificar(self):
+        super().classificar() # pega o preço da classe mãe
+        opc = ValidadorEntrada.opcao("Perecível? (S/N): ", ["S", "N"])
+        if opc == "S":
+            self.tipo = "Comida Perecível"
+            self.validade = input("Digite a validade (dd/mm/aaaa): ")
         else:
-            # escolha limpeza, higiene ou outros
-            self.tipo = tipo_input.capitalize()
-            print(f"\nProduto {self.nome} classificado como: {self.tipo}")
+            self.tipo = "Comida Não Perecível"
+
+    def obter_detalhes(self):
+        detalhes = super().get_detalhes() if hasattr(super(), 'get_detalhes') else f"Tipo: {self.tipo} | Preço: R$ {self.preco:.2f}"
+        return f"{detalhes} | Validade: {self.validade}"
+
+
+class ProdutoBebida(Produto):
+    def __init__(self, nome):
+        super().__init__(nome)
+        self.tipo = "Bebida"
+        self.temperatura = "N/A"
+
+    def classificar(self):
+        super().classificar()
+        temp = ValidadorEntrada.opcao("Gelada ou Quente? (G/Q): ", ["G", "Q"])
+        self.temperatura = "Gelada" if temp == "G" else "Quente"
+        self.tipo = f"Bebida {self.temperatura}"
+
+
+class ProdutoGeral(Produto): # higiene, limpeza, outros
+    def __init__(self, nome, categoria):
+        super().__init__(nome)
+        self.tipo = categoria.capitalize()
+
+class ListaCompras:        
+    def __init__(self):
+        self.items = {} # ASSOCIAÇÃO: Guarda instâncias de objetos do tipo Produto
+
+    def popular_lista(self, lista_nomes):
+        for i, nome in enumerate(lista_nomes, start=1):
+            # produto base
+            self.items[i] = Produto(nome)
         
-        # adicionar ou atualiza os dados no dicionario da lista
-        objeto_lista.items[chave_produto]["tipo"] = self.tipo
-        objeto_lista.items[chave_produto]["preco"] = self.preco
-        objeto_lista.items[chave_produto]["validade"] = self.validade
+    def exibir_lista(self):
+        print("\n--- LISTA DE COMPRAS ---")
+        if not self.items:
+            print("A lista está vazia.")
+            return
+        for chave, prod in self.items.items():
+            print(f"{chave} - [ ] {prod.nome}")
+            if prod.tipo != "Não classificado":
+                print(f"    └─ {prod.obter_detalhes()}")
 
+    def editar_produto(self, chave):
+        if chave not in self.items:
+            print("Produto não encontrado!")
+            return
 
-    def editar_produto(choice):
+        print(f"\nEditando: {self.items[chave].nome}")
+        print("1 - Classificar | 2 - Excluir | 0 - Voltar")
+        opcao = ValidadorEntrada.opcao("Escolha: ", ["1", "2", "0"])
 
-        if choice in minha_lista.items: # perguntas pra escolher e editar o produto escolhido
-            print(f"Produto escolhido: {minha_lista.items[choice]['nome']}")
-            while True:
-                print("Você deseja:    Classificar (1)    Excluir (2)   Sair (0)")
-                option = int(input("Escolha uma opção: "))
-                if option == 1:
-                    class_prod = Produto(minha_lista.items[choice]['nome'], "", 0)
-                    class_prod.classificar_produto(minha_lista, choice) # chamar a função de classificação
-                    break
-                elif option == 2:
-                    minha_lista.items.pop(choice)
-                    print("Produto excluído!")
-                    break
-                elif option == 0:
-                    return False
-                else:
-                    print("Opção inválida!")
-        elif choice == 0:
-            return False
-        elif choice not in minha_lista.items:
-            print("Produto não encontrado na lista!")
-        elif isinstance(choice, int) == False:
-            print("Entrada inválida! Digite um número.")
+        if opcao == "1": # POLIMORFISMO: troca a classificação genérica por uma específica
+            print("Categorias: comida | bebida | limpeza | higiene | outros")
+            cat = input("Digite a categoria: ").strip().lower()
             
-    def escolher_produto():
-        while True:
-            try: # loop pra validar a escolha do produto a ser editado
-                choice = int(input("\nEscolha o produto que deseja editar(0 para sair): "))
-                return choice
-            except ValueError:
-                print("Entrada inválida! Digite um número.")
+            nome_atual = self.items[chave].nome
+            if cat == "comida":
+                novo_prod = ProdutoComida(nome_atual)
+            elif cat == "bebida":
+                novo_prod = ProdutoBebida(nome_atual)
+            else:
+                novo_prod = ProdutoGeral(nome_atual, cat)
+            
+            novo_prod.classificar()
+            self.items[chave] = novo_prod # atualiza a associação
 
-
-
-# EXECUÇÃO DO PROGRAMA 
-
-# 1 passo - processar a imagem e extrair o texto
-items_limpos = editorTexto.limpar_lista_compras(texto) 
-
-# 2 passo - organizar a lista e exibir na tela
-minha_lista = organizar_lista()
-minha_lista.popular_lista(items_limpos)
-'''
-# 3 passo - escolher o produto e editar
-choice = None
-while choice != 0: #loop externo 
-    minha_lista.exibir_lista()
-    choice = Produto.escolher_produto()
-
-# 4 passo - editar o produto escolhido (dentro do loop)
-    Produto.editar_produto(choice)'''
+        elif opcao == "2":
+            self.items.pop(chave)
+            print("Produto excluído!")
