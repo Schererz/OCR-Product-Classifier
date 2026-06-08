@@ -1,4 +1,4 @@
-github_readme = """# 🛒 Sistema Inteligente de Classificação de Produtos (OCR + POO)
+# Sistema Inteligente de Classificação de Produtos (OCR + POO)
 
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 ![Tesseract](https://img.shields.io/badge/Tesseract--OCR-black?style=for-the-badge&logo=google&logoColor=white)
@@ -10,7 +10,7 @@ O software foi desenvolvido sob rígidos padrões acadêmicos, aplicando conceit
 
 ---
 
-## 🛠️ Arquitetura e Conceitos de POO Aplicados
+## Arquitetura e Conceitos de POO Aplicados
 
 O sistema foi estruturado em **6 classes principais**, garantindo a separação de responsabilidades (SOLID) e alta coesão:
 
@@ -32,7 +32,7 @@ O sistema foi estruturado em **6 classes principais**, garantindo a separação 
 
 ---
 
-## 🚀 Como Executar o Projeto
+## Como Executar o Projeto
 
 ### 1. Instalar a Engine do OCR
 O projeto depende do motor Tesseract instalado no sistema operacional:
