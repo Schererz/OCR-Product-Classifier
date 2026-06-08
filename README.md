@@ -35,7 +35,8 @@ O sistema foi estruturado em **6 classes principais**, garantindo a separação 
 ### 1. Instalar a Engine do OCR
 O projeto depende do motor Tesseract instalado no sistema operacional:
 * **Windows:** Baixe o instalador compilado por terceiros (ex: UB-Mannheim) e marque a opção para instalar o pacote de dados em **Português (`por`)**.
-* Adicione o caminho do executável `tesseract.exe` na variável correspondente dentro do arquivo `cod_geral.py`.
+* Adicione o caminho do executável `tesseract.exe` na variável correspondente dentro do arquivo `main.py`.
+* Adicionar path da imagem a ser escaneada no aqurivo `main.py`.
 
 ### 2. Clonar o Repositório e Instalar Dependências
 Saída de código
