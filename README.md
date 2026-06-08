@@ -20,15 +20,13 @@ O sistema foi estruturado em **6 classes principais**, garantindo a separação 
 * **`ProdutoBebida` (Subclasse):** Especializa o produto para armazenar propriedades térmicas de consumo (se deve ser mantido quente ou gelado).
 * **`ProdutoGeral` (Subclasse):** Abstração genérica reutilizada para classificar seções secundárias como Higiene Pessoal, Limpeza e Utensílios.
 
-> **Onde está o Polimorfismo?** O menu gerencia objetos genéricos de `Produto`. Quando o usuário edita uma categoria, o objeto é transformado em sua subclasse correspondente em tempo de execução. Ao chamar `.classificar()` ou `.obter_detalhes()`, o Python executa o comportamento específico da subclasse sem precisar de validações condicionais externas.
-
 ### 2. Associação e Encapsulamento
 * **`ListaCompras`:** Funciona como a classe controladora do inventário. Ela encapsula um dicionário de dados (`self.items`) que mantém uma relação de **Associação** direta com as instâncias de `Produto`.
 
 ### 3. Infraestrutura e Utilitários (Camada de Suporte)
 * **`OCRProcessor`:** Encapsula a biblioteca PyTesseract, isolando a lógica de baixo nível do processamento de imagem da regra de negócios.
 * **`GerenciadorTexto`:** Concentra o motor de **Regex (`re`)** responsável por limpar ruídos de caracteres, strings vazias e cabeçalhos textuais gerados no escaneamento.
-* **`ValidadorEntrada`:** Centraliza métodos estáticos (`@staticmethod`) que protegem a aplicação contra quebras de execução causadas por inputs incorretos do usuário (Tratamento de Exceções).
+* **`ValidadorEntrada`:** Centraliza métodos que protegem a aplicação contra quebras de execução causadas por inputs incorretos do usuário (Tratamento de Exceções).
 
 ---
 
