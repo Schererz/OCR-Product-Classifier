@@ -1,17 +1,21 @@
 from cod_geral import *
 
-# 1 passo - processar a imagem e extrair o texto
-items_limpos = editorTexto.limpar_lista_compras(texto) 
+# (Configuração do OCR mantida igual ao seu original...)
+pytesseract.pytesseract.tesseract_cmd = r"C:\Users\pedro\AppData\Local\Programs\Tesseract-OCR\tesseract.exe" # path do executável do tesseract
+ocr_processor = OCRProcessor(pytesseract.pytesseract.tesseract_cmd)
+texto_extraido = ocr_processor.process_image('image.png') #nome do arquivo da imagem
 
-# 2 passo - organizar a lista e exibir na tela
-minha_lista = organizar_lista()
+items_limpos = GerenciadorTexto.limpar_lista_compras(texto_extraido) 
+
+minha_lista = ListaCompras()
 minha_lista.popular_lista(items_limpos)
 
-# 3 passo - escolher o produto e editar
-choice = None
-while choice != 0: #loop externo 
+while True:
     minha_lista.exibir_lista()
-    choice = Produto.escolher_produto()
-
-# 4 passo - editar o produto escolhido
-    Produto.editar_produto(choice)
+    try:
+        choice = int(input("\nEscolha o número do produto para editar (0 para sair): "))
+        if choice == 0:
+            break
+        minha_lista.editar_produto(choice)
+    except ValueError:
+        print("Digite um número válido!")
